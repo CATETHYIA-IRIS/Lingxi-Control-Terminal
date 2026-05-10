@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Ultra Fusion V3.3 Remote WebUI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg0:#061126;--bg1:#08265a;--bg2:#004466;--panel:rgba(255,255,255,.105);--panel2:rgba(255,255,255,.075);--panel3:rgba(255,255,255,.14);--line:rgba(160,205,255,.18);--line2:rgba(110,190,255,.42);--text:#f7fbff;--sub:#b7c7e7;--muted:#7f91b4;--blue:#2f95ff;--cyan:#37d6e6;--green:#52e08f;--gold:#e8c481;--red:#ff5b6e;--orange:#ffb24a;--shadow:0 22px 60px rgba(0,0,0,.30);--r:22px}
+html[data-theme="white"]{--bg0:#eef3fb;--bg1:#f8fbff;--bg2:#eaf2ff;--panel:rgba(255,255,255,.92);--panel2:rgba(255,255,255,.76);--panel3:rgba(255,255,255,.98);--line:rgba(28,55,92,.10);--line2:rgba(36,140,255,.36);--text:#172033;--sub:#59677c;--muted:#8894a7;--blue:#168cff;--cyan:#12c8d6;--green:#00b978;--gold:#aa7a24;--shadow:0 18px 42px rgba(40,70,120,.13)}
+html[data-theme="black"]{--bg0:#05070c;--bg1:#0d111b;--bg2:#080a10;--panel:rgba(255,255,255,.08);--panel2:rgba(255,255,255,.052);--panel3:rgba(255,255,255,.12);--line:rgba(255,255,255,.10);--line2:rgba(86,144,255,.38);--text:#f5f6fa;--sub:#aeb5c8;--muted:#737b91;--blue:#4f8cff;--cyan:#4bd7ff;--green:#57d68d;--gold:#e5c17e;--shadow:0 24px 70px rgba(0,0,0,.45)}
+body{width:100vw;height:100vh;overflow:hidden;background:var(--bg0);color:var(--text);font-family:"PingFang SC","Microsoft YaHei",Arial,sans-serif}
+button,input,select{font-family:inherit;color:inherit}button{cursor:pointer}
+.app{height:100vh;min-width:1120px;display:grid;grid-template-columns:230px minmax(0,1fr);background:radial-gradient(circle at 20% 12%,rgba(47,149,255,.30),transparent 28%),radial-gradient(circle at 78% 82%,rgba(55,214,230,.22),transparent 35%),linear-gradient(135deg,var(--bg0),var(--bg1) 52%,var(--bg2))}
+.side{height:100vh;padding:14px 12px;border-right:1px solid var(--line);background:linear-gradient(180deg,var(--panel),rgba(255,255,255,.025));box-shadow:15px 0 45px rgba(0,0,0,.16);display:flex;flex-direction:column;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;padding:10px 8px 16px;border-bottom:1px solid var(--line)}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--blue));display:flex;align-items:center;justify-content:center;box-shadow:0 0 22px rgba(80,165,255,.28)}.logo:before{content:"✦";font-size:28px;color:#061126}
+.brand h1{font-size:23px;line-height:1}.brand p{font-size:11px;color:var(--sub);margin-top:3px}
+.menu{display:flex;flex-direction:column;gap:8px}.menu button{height:48px;border:1px solid var(--line);border-radius:15px;background:var(--panel2);color:var(--sub);text-align:left;padding:0 14px;font-size:14px;font-weight:850;transition:.2s}
+.menu button.active,.menu button:hover{background:linear-gradient(135deg,rgba(47,149,255,.56),rgba(55,214,230,.12));color:#fff;border-color:var(--line2);box-shadow:0 0 22px rgba(80,165,255,.18)}
+.side-note{margin-top:auto;border-radius:18px;background:var(--panel2);border:1px solid var(--line);padding:13px;color:var(--sub);font-size:12px;line-height:1.75}
+.main{height:100vh;padding:14px 16px 18px;overflow:hidden}
+.topbar{height:70px;display:grid;grid-template-columns:1fr auto;gap:14px;margin-bottom:12px}
+.top-left{height:66px;border:1px solid rgba(255,219,150,.36);border-radius:28px;background:linear-gradient(180deg,var(--panel3),var(--panel2));box-shadow:var(--shadow),inset 0 0 20px rgba(66,156,255,.10);display:grid;grid-template-columns:1fr 210px 230px;align-items:center;padding:0 24px}
+.time{font-size:34px;font-weight:950;letter-spacing:1px}.date{font-size:12px;color:var(--sub);margin-top:4px}.top-weather{text-align:right}.top-weather .t{font-size:24px;font-weight:950}.top-weather .d{font-size:12px;color:var(--sub);margin-top:3px}
+.theme-switch{display:flex;align-items:center;gap:10px}.pill{height:42px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);display:flex;align-items:center;gap:8px;color:var(--sub);font-weight:800;white-space:nowrap}.dot{width:9px;height:9px;border-radius:50%;background:#7b8497}.dot.on{background:var(--green);box-shadow:0 0 12px var(--green)}.dot.warn{background:var(--orange);box-shadow:0 0 12px var(--orange)}
+.theme-btn{height:42px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);padding:0 16px;font-weight:900;color:var(--text)}
+.page{display:none;height:calc(100vh - 96px);overflow:auto;padding-right:5px}.page.active{display:block}
+.card{border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg,var(--panel),var(--panel2));box-shadow:var(--shadow),inset 0 0 22px rgba(79,158,255,.065);backdrop-filter:blur(10px);position:relative;overflow:hidden}.card-pad{padding:16px}.section-title{font-size:18px;font-weight:950;display:flex;align-items:center;gap:8px;margin-bottom:12px}.sub{color:var(--sub);font-size:12px}
+.home-grid{height:100%;display:grid;grid-template-columns:minmax(310px,360px) minmax(560px,1fr) 300px;grid-template-rows:222px 248px 142px 74px;gap:12px}
+.role{grid-row:1/4;padding:12px;background:linear-gradient(180deg,rgba(54,127,255,.25),rgba(8,20,54,.78))}
+.role-stage{height:410px;border-radius:21px;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 35%,rgba(90,185,255,.4),transparent 30%),linear-gradient(160deg,rgba(62,126,255,.45),rgba(8,17,43,.9));border:1px solid var(--line)}
+.role-stage:before{content:"";position:absolute;inset:26px;border-radius:50%;border:1px solid rgba(255,229,162,.38);box-shadow:0 0 50px rgba(62,178,255,.28)}
+.role-name-big{position:absolute;left:22px;top:18px;font-size:28px;font-weight:950}.role-sign{position:absolute;left:22px;right:22px;bottom:22px;line-height:1.65;color:var(--sub);font-size:13px}
+.role-figure{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:200px;height:270px;border-radius:28px;background:linear-gradient(160deg,rgba(255,214,140,.24),rgba(45,140,255,.25));border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:72px;filter:drop-shadow(0 18px 32px rgba(0,0,0,.35))}
+.role-select{height:104px;margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px}.role-mini{border:1px solid var(--line);border-radius:18px;background:var(--panel2);padding:10px;display:flex;flex-direction:column;justify-content:center}.role-mini.active{border-color:rgba(255,217,142,.7);box-shadow:0 0 22px rgba(255,211,130,.20);background:linear-gradient(135deg,rgba(255,206,122,.20),rgba(48,142,255,.08))}
+.role-mini h3{font-size:16px}.role-mini p{font-size:11px;color:var(--sub);margin-top:5px}
+.intro{grid-column:2/4;padding:18px;background:linear-gradient(90deg,var(--panel),rgba(255,255,255,.04)),radial-gradient(circle at 70% 45%,rgba(78,165,255,.18),transparent 33%)}
+.intro-main{display:grid;grid-template-columns:1fr 205px;gap:20px}.intro h2{font-size:37px;letter-spacing:2px}.cv{display:inline-flex;align-items:center;margin-left:12px;vertical-align:middle;font-size:12px;border:1px solid rgba(255,223,154,.48);border-radius:999px;padding:7px 12px;color:var(--gold)}.sign{margin-top:13px;font-size:16px;color:var(--text);line-height:1.7}
+.status-box{border-radius:18px;background:var(--panel2);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px}.status-row{height:36px;border-radius:12px;background:var(--panel2);display:flex;justify-content:space-between;align-items:center;padding:0 11px;color:var(--text);font-size:12px}.ok{color:var(--green)}.bad{color:var(--red)}.warn-t{color:var(--orange)}
+.devices{grid-column:2/3;padding:14px}.device-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.dev{min-height:72px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);padding:10px;display:grid;grid-template-columns:36px 1fr 42px;gap:9px;align-items:center}.dev.on{background:linear-gradient(135deg,rgba(51,143,255,.36),rgba(56,230,210,.10));border-color:var(--line2)}.dev .icon{font-size:26px}.dev b{font-size:14px}.dev span{font-size:11px;color:var(--sub)}.sw{width:42px;height:23px;border-radius:999px;background:rgba(255,255,255,.22);position:relative}.sw:after{content:"";position:absolute;width:17px;height:17px;border-radius:50%;left:3px;top:3px;background:#d9e1ee;transition:.18s}.dev.on .sw{background:var(--blue)}.dev.on .sw:after{left:22px;background:#fff}
+.sidecards{grid-column:3/4;grid-row:2/4;display:grid;grid-template-rows:166px 180px 160px;gap:12px}.mini-card{padding:14px}.metric-large{font-size:26px;font-weight:950;margin:14px 0 6px}.scenes{grid-column:2/3;padding:14px}.scene-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.scene{height:74px;border-radius:16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:850}.scene.active{background:linear-gradient(135deg,rgba(36,141,255,.66),rgba(255,212,130,.18));border-color:rgba(255,216,144,.75);box-shadow:0 0 25px rgba(73,158,255,.20)}.scene i{font-size:24px;font-style:normal}.home-log{grid-column:1/4;height:74px;padding:10px 12px;display:flex;gap:10px;overflow:hidden}.log-line{min-width:260px;border-radius:13px;background:var(--panel2);padding:9px 11px;color:var(--sub);font-size:12px}.log-line b{color:var(--cyan);margin-right:7px}.log-line.alarm b{color:var(--red)}.log-line.system b{color:var(--green)}
+.grid{display:grid;gap:14px}.grid4{grid-template-columns:repeat(4,minmax(220px,1fr))}.grid6{grid-template-columns:repeat(6,minmax(150px,1fr))}.grid3{grid-template-columns:repeat(3,minmax(260px,1fr))}
+.small-card{height:155px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.small-icon{font-size:30px;color:var(--cyan);margin-bottom:8px}.small-value{font-size:25px;font-weight:950}.small-label{font-size:12px;color:var(--sub);margin-top:8px}
+.control-grid,.life-grid{display:grid;grid-template-columns:repeat(4,minmax(230px,1fr));gap:14px}.control-grid .dev{min-height:120px;grid-template-columns:52px 1fr 48px;padding:18px}.control-grid .icon{font-size:35px}.control-grid b{font-size:18px}
+.life-card{height:160px;padding:18px}.life-card.active{background:linear-gradient(135deg,rgba(36,141,255,.55),rgba(255,212,130,.15));border-color:rgba(255,216,144,.75)}.life-icon{font-size:32px}.life-card h3{font-size:21px;margin:10px 0 7px}
+.logs-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}.log-panel{height:430px;padding:16px;overflow:auto}.log-panel .log-line{width:100%;min-width:0;margin-bottom:10px}
+.settings{display:grid;grid-template-columns:1fr 1fr;gap:14px}.input-row{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center;margin:12px 0}.input-row input,.input-row select{height:42px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.14);padding:0 14px;outline:none}.btn{height:40px;border:0;border-radius:14px;background:linear-gradient(135deg,var(--blue),#2450c8);padding:0 16px;color:#fff;font-weight:950;margin:10px 8px 0 0}.btn.gray{background:rgba(255,255,255,.16);color:var(--text)}.btn.green{background:linear-gradient(135deg,var(--green),#0d9e70)}.btn.red{background:linear-gradient(135deg,var(--red),#b51f3d)}
+.warnbox{border:1px solid rgba(255,178,74,.36);background:rgba(255,178,74,.10);border-radius:16px;padding:13px;color:var(--sub);line-height:1.7;font-size:12px}
+@media(max-width:1260px){.app{grid-template-columns:205px minmax(0,1fr)}.home-grid{grid-template-columns:275px minmax(500px,1fr) 238px;grid-template-rows:188px 210px 120px 58px;gap:10px}.role-stage{height:330px}.role-select{height:86px}.intro h2{font-size:31px}.top-left{grid-template-columns:1fr 180px 190px}.control-grid,.life-grid{grid-template-columns:repeat(3,minmax(210px,1fr))}.grid6{grid-template-columns:repeat(3,minmax(150px,1fr))}.settings{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo"></div><div><h1>Ultra Remote</h1><p>V3.3.1 远程控制台</p></div></div>
+    <nav class="menu">
+      <button class="active" onclick="showPage('home',this)">首页总览</button>
+      <button onclick="showPage('monitor',this)">数据监测</button>
+      <button onclick="showPage('control',this)">设备控制</button>
+      <button onclick="showPage('life',this)">智慧生活</button>
+      <button onclick="showPage('logs',this)">系统日志</button>
+      <button onclick="showPage('settings',this)">连接设置</button>
+    </nav>
+    <div class="side-note">
+      <b>Remote WebUI</b><br>
+      外网浏览器 → 巴法云 MQTT WebSocket → 家中无屏中控 → 执行层<br>
+      本页面不访问 192.168.4.1
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <div><div class="time" id="timeText">--:--:--</div><div class="date" id="dateText">----年--月--日 星期-</div></div>
+        <div class="top-weather"><div class="t"><span id="topTemp">--</span>°C</div><div class="d">室内温度</div></div>
+        <div class="top-weather"><div class="t" id="remoteWeather">--</div><div class="d">包头天气 / 高德</div></div>
+      </div>
+      <div class="theme-switch">
+        <div class="pill"><span class="dot" id="dotMqtt"></span>MQTT <span id="mqttText">未连接</span></div>
+        <div class="pill"><span class="dot" id="dotCenter"></span>中控 <span id="centerText">未知</span></div>
+        <button class="theme-btn" onclick="nextTheme()">主题：<span id="themeName">蓝</span></button>
+      </div>
+    </header>
+
+    <section class="page active" id="home">
+      <div class="home-grid">
+        <section class="card role">
+          <div class="role-stage">
+            <div class="role-name-big" id="roleNameBig">守岸人</div>
+            <div class="role-figure" id="roleFigure">✦</div>
+            <div class="role-sign" id="roleSign">守岸人，这个称呼就很好。它表示，某种因你而有的意义和决心。</div>
+          </div>
+          <div class="role-select">
+            <div class="role-mini active" id="mini0" onclick="setRole(0)"><h3>守岸人</h3><p>陪伴守护 / 已选择</p></div>
+            <div class="role-mini" id="mini1" onclick="setRole(1)"><h3>卡提希娅</h3><p>智能协同 / 选择</p></div>
+          </div>
+        </section>
+
+        <section class="card intro">
+          <div class="intro-main">
+            <div><h2 id="roleName">守岸人 <span class="cv">远程模式 ▌▌▌</span></h2><div class="sign" id="roleDesc">当前为外网远程 WebUI，本页面通过 MQTT 控制家中中控。</div></div>
+            <div class="status-box">
+              <div class="status-row"><span>MQTT WebSocket</span><b id="mqttStatus">未连接</b></div>
+              <div class="status-row"><span>中控网关</span><b id="gatewayStatus">等待状态</b></div>
+              <div class="status-row"><span>最后状态</span><b id="lastStateText">--</b></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card devices"><div class="section-title">💠 设备控制</div><div class="device-grid" id="deviceGrid"></div></section>
+
+        <aside class="sidecards">
+          <div class="card mini-card"><div class="section-title">❖ 执行层</div><div class="metric-large" id="execText">--</div><div class="sub">根据 smarthomestatus 判断</div></div>
+          <div class="card mini-card"><div class="section-title">☁ 天气</div><div class="metric-large" id="weatherBox">待更新</div><div class="sub" id="weatherSub">高德天气由中控上报</div></div>
+          <div class="card mini-card"><div class="section-title">🛡 报警中心</div><div class="metric-large" id="alarmText">正常</div><div class="sub" id="alarmSub">燃气 / 烟雾 / 安防</div></div>
+        </aside>
+
+        <section class="card scenes"><div class="section-title">🌙 场景模式</div><div class="scene-list" id="sceneList"></div></section>
+        <section class="card home-log" id="logBox"></section>
+      </div>
+    </section>
+
+    <section class="page" id="monitor">
+      <div class="grid grid6">
+        <div class="card small-card"><div class="small-icon">🌡</div><div class="small-value" id="mTemp">--</div><div class="small-label">室内温度</div></div>
+        <div class="card small-card"><div class="small-icon">💧</div><div class="small-value" id="mHum">--</div><div class="small-label">室内湿度</div></div>
+        <div class="card small-card"><div class="small-icon">☀</div><div class="small-value" id="mLux">--</div><div class="small-label">光照百分比</div></div>
+        <div class="card small-card"><div class="small-icon">☁</div><div class="small-value" id="wText">--</div><div class="small-label">当前天气</div></div>
+        <div class="card small-card"><div class="small-icon">🌬</div><div class="small-value" id="windInfo">--</div><div class="small-label">风向风力</div></div>
+        <div class="card small-card"><div class="small-icon">📅</div><div class="small-value" id="tomorrow">--</div><div class="small-label">明日预报</div></div>
+      </div>
+      <div class="grid grid4" style="margin-top:14px">
+        <div class="card small-card"><div class="small-icon">🚪</div><div class="small-value" id="doorStatus">--</div><div class="small-label">入户门磁</div></div>
+        <div class="card small-card"><div class="small-icon">▣</div><div class="small-value" id="windowSensorStatus">--</div><div class="small-label">窗户门磁</div></div>
+        <div class="card small-card"><div class="small-icon">👤</div><div class="small-value" id="ktHuman">--</div><div class="small-label">客厅人体</div></div>
+        <div class="card small-card"><div class="small-icon">🛏</div><div class="small-value" id="wsHuman">--</div><div class="small-label">卧室人体</div></div>
+      </div>
+    </section>
+
+    <section class="page" id="control"><div class="control-grid" id="controlGrid"></div></section>
+    <section class="page" id="life"><div class="life-grid" id="lifeGrid"></div></section>
+
+    <section class="page" id="logs">
+      <div class="logs-grid">
+        <div class="card log-panel"><div class="section-title">操作日志</div><div id="opLog"></div></div>
+        <div class="card log-panel"><div class="section-title">报警日志</div><div id="alarmLog"></div></div>
+        <div class="card log-panel"><div class="section-title">系统日志</div><div id="sysLog"></div></div>
+      </div>
+    </section>
+
+    <section class="page" id="settings">
+      <div class="settings">
+        <div class="card card-pad">
+          <div class="section-title">MQTT WebSocket 设置</div>
+          <div class="warnbox">正式远程推荐使用巴法云 AppID / SecretKey 认证，避免浏览器和 ESP32 使用同一个私钥 ClientID 互相挤下线。</div>
+          <div class="input-row"><span>认证模式</span><select id="authMode"><option value="app">推荐：AppID / SecretKey</option><option value="uid">测试：私钥作为 ClientID</option></select></div>
+          <div class="input-row"><span>Host</span><input id="mqttHost" value="bemfa.com"></div>
+          <div class="input-row"><span>端口</span><input id="mqttPort" value="9504"></div>
+          <div class="input-row"><span>Path</span><input id="mqttPath" value="/wss"></div>
+          <div class="input-row"><span>巴法云私钥 UID</span><input id="bemfaUid" placeholder="测试模式填写；正式模式可留空"></div>
+          <div class="input-row"><span>AppID</span><input id="bemfaAppid" placeholder="正式模式填写"></div>
+          <div class="input-row"><span>SecretKey</span><input id="bemfaSecret" placeholder="正式模式填写" type="password"></div>
+          <button class="btn green" onclick="saveSettings()">保存设置</button>
+          <button class="btn" onclick="connectMqtt()">连接 MQTT</button>
+          <button class="btn gray" onclick="disconnectMqtt()">断开</button>
+        </div>
+        <div class="card card-pad">
+          <div class="section-title">主题设置</div>
+          <div class="input-row"><span>命令主题</span><input id="topicCmd" value="smarthomecmd"></div>
+          <div class="input-row"><span>状态主题</span><input id="topicStatus" value="smarthomestatus"></div>
+          <div class="input-row"><span>日志主题</span><input id="topicLog" value="smarthomelog"></div>
+          <div class="warnbox">
+            下发控制使用：<b>命令主题 + /set</b><br>
+            接收状态使用：<b>smarthomestatus</b><br>
+            接收日志使用：<b>smarthomelog</b>
+          </div>
+          <button class="btn" onclick="publishCmd('cloud_report')">请求中控上报</button>
+          <button class="btn gray" onclick="clearLogs()">清空本地日志</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+let mqttClient=null,mqttConnected=false,lastStatusAt=0,lastData={},sceneNow=0,currentRole=0,themeIndex=0;
+const themes=['blue','white','black'],themeNames={blue:'蓝',white:'白',black:'黑'};
+const logs={op:[],alarm:[],sys:[]};
+const devs=[['light_living','客厅灯','💡','light_living_on','light_living_off'],['light_bed','卧室灯','💡','light_bed_on','light_bed_off'],['curtain_living','客厅窗帘','🎚','relay_3','relay_3'],['curtain_bed','卧室窗帘','🎚','relay_4','relay_4'],['air','空调电源','❄','relay_air','relay_air'],['tv','电视电源','📺','relay_tv','relay_tv'],['fridge','冰箱电源','🧊','relay_fridge','relay_fridge'],['water','热水器','♨','relay_water_heater','relay_water_heater'],['window','窗户开关','▣','window_toggle','window_toggle']];
+const scenes=[['scene_home',3,'🏠','回家模式','迎宾灯光，恢复居家状态'],['scene_away',2,'💼','离家模式','关闭设备，进入安防状态'],['scene_movie',14,'🎬','观影模式','关闭窗帘，开启电视氛围'],['scene_sleep',4,'🌙','睡眠模式','低亮暖光，关闭干扰设备'],['scene_office',12,'💻','办公模式','高亮专注，保持安静环境'],['scene_comfort',10,'☕','舒适模式','灯光和空调进入舒适状态'],['scene_night',18,'🌘','起夜模式','极低亮度夜间引导'],['scene_alarm',9,'🛡','报警模式','红色闪烁，安全提醒']];
+const S={};
+
+function $(id){return document.getElementById(id)}
+function showPage(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.menu button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active')}
+function nextTheme(){themeIndex=(themeIndex+1)%themes.length;let t=themes[themeIndex];document.documentElement.setAttribute('data-theme',t==='blue'?'':t);$('themeName').innerText=themeNames[t];}
+function tick(){let d=new Date(),p=n=>String(n).padStart(2,'0'),w=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][d.getDay()];$('timeText').innerText=p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());$('dateText').innerText=d.getFullYear()+'年'+p(d.getMonth()+1)+'月'+p(d.getDate())+'日 '+w;updateLinkState()}setInterval(tick,1000);tick();
+
+function setRole(i){currentRole=i;let name=i===0?'守岸人':'卡提希娅';let sign=i===0?'守岸人，这个称呼就很好。它表示，某种因你而有的意义和决心。':'即便身处命运的漩涡，我也有想要坚持的事。';$('roleNameBig').innerText=name;$('roleName').innerHTML=name+' <span class="cv">远程模式 ▌▌▌</span>';$('roleSign').innerText=sign;$('roleFigure').innerText=i===0?'✦':'✧';$('mini0').classList.toggle('active',i===0);$('mini1').classList.toggle('active',i===1)}
+function devHtml(d){return '<div class="dev" id="dev_'+d[0]+'" onclick="toggleDev(\''+d[0]+'\')"><div class="icon">'+d[2]+'</div><div><b>'+d[1]+'</b><br><span id="st_'+d[0]+'">已关闭</span></div><div class="sw"></div></div>'}
+function buildDevices(){deviceGrid.innerHTML=devs.slice(0,6).map(devHtml).join('');controlGrid.innerHTML=devs.map(devHtml).join('')}
+function buildScenes(){sceneList.innerHTML=scenes.slice(0,5).map(s=>'<div class="scene" id="sc_'+s[1]+'" onclick="toggleScene(\''+s[0]+'\','+s[1]+')"><i>'+s[2]+'</i><span>'+s[3]+'</span></div>').join('');lifeGrid.innerHTML=scenes.map(s=>'<div class="card life-card" id="life_'+s[1]+'" onclick="toggleScene(\''+s[0]+'\','+s[1]+')"><div class="life-icon">'+s[2]+'</div><h3>'+s[3]+'</h3><div class="sub">'+s[4]+'</div></div>').join('')}
+function refreshDeviceUI(){devs.forEach(d=>{let on=!!S[d[0]];document.querySelectorAll('#dev_'+d[0]).forEach(el=>el.classList.toggle('on',on));document.querySelectorAll('#st_'+d[0]).forEach(el=>el.innerText=on?'已开启':'已关闭')})}
+function toggleDev(k){let d=devs.find(x=>x[0]===k);S[k]=!S[k];refreshDeviceUI();publishCmd(S[k]?d[3]:d[4])}
+function toggleScene(cmd,id){publishCmd(cmd);sceneNow=id;applySceneHighlight()}
+function applySceneHighlight(){document.querySelectorAll('.scene,.life-card').forEach(x=>x.classList.remove('active'));if(sceneNow){let a=$('sc_'+sceneNow),b=$('life_'+sceneNow);if(a)a.classList.add('active');if(b)b.classList.add('active')}}
+function luxP(v){return Math.max(0,Math.min(100,Math.round((Number(v)||0)/500*100)))}
+
+function pushLog(type,msg){let d=new Date().toLocaleTimeString(),cls=type==='alarm'?'alarm':(type==='sys'?'system':'');let html='<div class="log-line '+cls+'"><b>'+({op:'操作',alarm:'报警',sys:'系统'}[type]||'日志')+'</b>'+d+'　'+String(msg)+'</div>';logs[type].unshift(html);logs[type]=logs[type].slice(0,24);renderLogs()}
+function renderLogs(){logBox.innerHTML=[...logs.op,...logs.alarm,...logs.sys].slice(0,5).join('');opLog.innerHTML=logs.op.join('')||'<div class="sub">暂无操作日志</div>';alarmLog.innerHTML=logs.alarm.join('')||'<div class="sub">暂无报警日志</div>';sysLog.innerHTML=logs.sys.join('')||'<div class="sub">暂无系统日志</div>'}
+function clearLogs(){logs.op=[];logs.alarm=[];logs.sys=[];renderLogs()}
+
+function loadSettings(){
+  const cfg=JSON.parse(localStorage.getItem('ultraRemoteCfg')||'{}');
+  ['authMode','mqttHost','mqttPort','mqttPath','bemfaUid','bemfaAppid','bemfaSecret','topicCmd','topicStatus','topicLog'].forEach(id=>{if(cfg[id]!==undefined)$(id).value=cfg[id]});
+}
+function saveSettings(){
+  const cfg={};
+  ['authMode','mqttHost','mqttPort','mqttPath','bemfaUid','bemfaAppid','bemfaSecret','topicCmd','topicStatus','topicLog'].forEach(id=>cfg[id]=$(id).value.trim());
+  localStorage.setItem('ultraRemoteCfg',JSON.stringify(cfg));
+  pushLog('sys','连接设置已保存到本机浏览器');
+}
+function setMqttState(on,text){mqttConnected=on;$('dotMqtt').classList.toggle('on',on);$('mqttText').innerText=text|| (on?'已连接':'未连接');$('mqttStatus').innerText=text|| (on?'已连接':'未连接');$('mqttStatus').className=on?'ok':'bad'}
+
+// ===== 纯 JS MQTT over WebSocket 客户端：不依赖 CDN / Paho =====
+let mqttSocket=null,mqttClientId='',mqttPacketId=1,mqttPingTimer=null;
+function utf8Bytes(s){return new TextEncoder().encode(String(s||''))}
+function encStr(s){let b=utf8Bytes(s);return [b.length>>8,b.length&255,...b]}
+function encRemainLen(len){let out=[];do{let d=len%128;len=Math.floor(len/128);if(len>0)d|=128;out.push(d)}while(len>0);return out}
+function sendPacket(type,body){
+  if(!mqttSocket||mqttSocket.readyState!==1)return false;
+  const head=[type,...encRemainLen(body.length)];
+  mqttSocket.send(new Uint8Array([...head,...body]));
+  return true;
+}
+function mqttConnectPacket(clientId,username,password){
+  let flags=0x02; // clean session
+  if(username)flags|=0x80;
+  if(password)flags|=0x40;
+  let vh=[...encStr('MQTT'),4,flags,0,60];
+  let pl=[...encStr(clientId)];
+  if(username)pl.push(...encStr(username));
+  if(password)pl.push(...encStr(password));
+  return [...vh,...pl];
+}
+function mqttSubscribe(topic){
+  const id=mqttPacketId++ & 0xffff;
+  const body=[id>>8,id&255,...encStr(topic),0];
+  sendPacket(0x82,body);
+}
+function mqttPublish(topic,payload){
+  const body=[...encStr(topic),...utf8Bytes(payload)];
+  return sendPacket(0x30,body);
+}
+function mqttPing(){sendPacket(0xC0,[])}
+function parseMqttFrame(buf){
+  const bytes=new Uint8Array(buf);
+  if(bytes.length<2)return;
+  const type=bytes[0]>>4;
+  let mul=1,rem=0,i=1,d=0;
+  do{d=bytes[i++];rem+=(d&127)*mul;mul*=128}while((d&128)&&i<bytes.length);
+  const start=i;
+  if(type===2){ // CONNACK
+    const rc=bytes[start+1];
+    if(rc===0) onMqttConnect();
+    else {setMqttState(false,'连接拒绝 '+rc);pushLog('sys','MQTT CONNACK 失败，返回码 '+rc);}
+  }else if(type===3){ // PUBLISH QoS0
+    const tlen=(bytes[start]<<8)|bytes[start+1];
+    const topic=new TextDecoder().decode(bytes.slice(start+2,start+2+tlen));
+    const payload=new TextDecoder().decode(bytes.slice(start+2+tlen,start+rem));
+    handleMqttMessage(topic,payload);
+  }else if(type===9){
+    pushLog('sys','MQTT 主题订阅成功');
+  }
+}
+function connectMqtt(){
+  saveSettings();
+  const host=$('mqttHost').value.trim()||'bemfa.com';
+  const port=Number($('mqttPort').value.trim()||9504);
+  const path=$('mqttPath').value.trim()||'/wss';
+  const mode=$('authMode').value;
+  let username='',password='';
+  mqttClientId='UltraRemote_'+Date.now()+'_'+Math.floor(Math.random()*9999);
+
+  if(mode==='uid'){
+    const uid=$('bemfaUid').value.trim();
+    if(!uid){pushLog('sys','测试模式需要填写巴法云私钥 UID');return}
+    mqttClientId=uid;
+  }else{
+    username=$('bemfaAppid').value.trim();
+    password=$('bemfaSecret').value.trim();
+    if(!username||!password){pushLog('sys','正式模式需要填写 AppID 和 SecretKey；没有的话先切换到“测试：私钥作为 ClientID”');return}
+  }
+
+  try{
+    disconnectMqtt(false);
+    const url='wss://'+host+':'+port+path;
+    setMqttState(false,'连接中');
+    pushLog('sys','正在连接 '+url);
+    mqttSocket=new WebSocket(url);
+    mqttSocket.binaryType='arraybuffer';
+    mqttSocket.onopen=()=>{sendPacket(0x10,mqttConnectPacket(mqttClientId,username,password));};
+    mqttSocket.onmessage=e=>parseMqttFrame(e.data);
+    mqttSocket.onerror=e=>{setMqttState(false,'异常');pushLog('sys','WebSocket 异常：请检查网络、Host/端口/Path，或浏览器是否允许 wss');};
+    mqttSocket.onclose=e=>{setMqttState(false,'已断开');pushLog('sys','WebSocket 已关闭 code='+e.code);if(mqttPingTimer){clearInterval(mqttPingTimer);mqttPingTimer=null;}};
+  }catch(e){
+    setMqttState(false,'异常');
+    pushLog('sys','MQTT 初始化失败：'+e.message);
+  }
+}
+function onMqttConnect(){
+  setMqttState(true,'已连接');
+  pushLog('sys','MQTT WebSocket 已连接');
+  mqttSubscribe($('topicStatus').value.trim()||'smarthomestatus');
+  mqttSubscribe($('topicLog').value.trim()||'smarthomelog');
+  if(mqttPingTimer)clearInterval(mqttPingTimer);
+  mqttPingTimer=setInterval(mqttPing,30000);
+  setTimeout(()=>publishCmd('cloud_report'),600);
+}
+function disconnectMqtt(log=true){
+  try{if(mqttSocket&&mqttSocket.readyState<=1)mqttSocket.close()}catch(e){}
+  mqttSocket=null;
+  if(mqttPingTimer){clearInterval(mqttPingTimer);mqttPingTimer=null;}
+  if(log)setMqttState(false,'已断开');
+}
+function publishCmd(cmd){
+  if(!mqttSocket||mqttSocket.readyState!==1||!mqttConnected){pushLog('sys','MQTT 未连接，无法下发：'+cmd);return}
+  const topic=($('topicCmd').value.trim()||'smarthomecmd')+'/set';
+  mqttPublish(topic,cmd);
+  pushLog('op','远程下发 '+cmd);
+}
+function handleMqttMessage(topic,payload){
+  if(topic===($('topicStatus').value.trim()||'smarthomestatus')){
+    try{applyData(JSON.parse(payload));lastStatusAt=Date.now()}catch(e){pushLog('sys','状态 JSON 解析失败：'+payload.slice(0,100))}
+  }else if(topic===($('topicLog').value.trim()||'smarthomelog')){
+    try{const l=JSON.parse(payload);pushLog(l.type||'sys',l.msg||payload)}catch(e){pushLog('sys',payload)}
+  }
+}
+function updateLinkState(){
+  const age=lastStatusAt?Math.round((Date.now()-lastStatusAt)/1000):9999;
+  const online=age<20;
+  $('dotCenter').classList.toggle('on',online);
+  $('dotCenter').classList.toggle('warn',!online&&lastStatusAt>0);
+  $('centerText').innerText=online?'在线':(lastStatusAt?'超时':'未知');
+  $('gatewayStatus').innerText=online?'在线':'等待状态';
+  $('gatewayStatus').className=online?'ok':'warn-t';
+  $('lastStateText').innerText=lastStatusAt?(age+' 秒前'):'--';
+}
+function applyData(d){
+  lastData=d||{};
+  topTemp.innerText=Number(d.WenDu||0).toFixed(1);
+  remoteWeather.innerText=(d.WeatherText||'--')+' '+(d.OutdoorTemp!==undefined?Number(d.OutdoorTemp).toFixed(0)+'°C':'');
+  execText.innerText=d.ZhiXingOnline?'在线':'离线';
+  execText.className=d.ZhiXingOnline?'metric-large ok':'metric-large bad';
+  alarmText.innerText=d.BaoJingMoShi?'报警':'正常';
+  alarmText.className=d.BaoJingMoShi?'metric-large bad':'metric-large ok';
+  alarmSub.innerText=(d.RanQi?'燃气异常 ':'')+(d.YanWu?'烟雾异常 ':'')||'燃气 / 烟雾 / 安防';
+  weatherBox.innerText=(d.WeatherText||'待更新')+' '+(d.OutdoorTemp!==undefined?Number(d.OutdoorTemp).toFixed(0)+'°C':'');
+  weatherSub.innerText=(d.TomorrowForecast||'明日预报待更新');
+
+  mTemp.innerText=Number(d.WenDu||0).toFixed(1)+'°C';
+  mHum.innerText=Number(d.ShiDu||0).toFixed(0)+'%';
+  mLux.innerText=(d.GuangZhaoPercent!==undefined?d.GuangZhaoPercent:luxP(d.GuangZhao))+'%';
+  wText.innerText=d.WeatherText||'--';
+  windInfo.innerText=(d.WindDirection||'--')+' '+(d.WindLevel||'--');
+  tomorrow.innerText=d.TomorrowForecast||'--';
+  doorStatus.innerText=d.DaMenCi?'打开':'关闭';
+  windowSensorStatus.innerText=d.ChuangHuCi?'打开':'关闭';
+  ktHuman.innerText=d.KeTingRenTi?'有人':'无人';
+  wsHuman.innerText=d.WoShiRenTi?'有人':'无人';
+
+  S.light_living=!!d.KeTingLightState; S.light_bed=!!d.WoShiLightState; S.air=!!d.AirRelayState; S.tv=!!d.TvRelayState; S.fridge=!!d.FridgeRelayState; S.water=!!d.WaterRelayState;
+  S.curtain_living=(d.KeTingCurtainPercent||0)>50; S.curtain_bed=(d.WoShiCurtainPercent||0)>50; S.window=(d.WindowPercent||0)>50;
+  sceneNow=Number(d.SceneState||0);
+  refreshDeviceUI();applySceneHighlight();updateLinkState();
+}
+
+buildDevices();buildScenes();setRole(0);loadSettings();pushLog('sys','Ultra Fusion Remote WebUI V3.3.1 已启动');
+</script>
+</body>
+</html>
