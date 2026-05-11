@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>Ultra Fusion V3.3 Remote WebUI</title>
+<title>Ultra Fusion V3.4.2 Remote WebUI</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--bg0:#061126;--bg1:#08265a;--bg2:#004466;--panel:rgba(255,255,255,.105);--panel2:rgba(255,255,255,.075);--panel3:rgba(255,255,255,.14);--line:rgba(160,205,255,.18);--line2:rgba(110,190,255,.42);--text:#f7fbff;--sub:#b7c7e7;--muted:#7f91b4;--blue:#2f95ff;--cyan:#37d6e6;--green:#52e08f;--gold:#e8c481;--red:#ff5b6e;--orange:#ffb24a;--shadow:0 22px 60px rgba(0,0,0,.30);--r:22px}
@@ -185,10 +185,13 @@ button,input,select{font-family:inherit;color:inherit}button{cursor:pointer}
           <div class="setting-row"><span>卡提希娅语音包</span><b id="rCartState">--</b></div>
           <div class="setting-row"><span>当前角色</span><b id="rRoleState">--</b></div>
           <div class="setting-row"><span>当前音频</span><b id="rVoiceNow">--</b></div>
+          <div class="setting-row"><span>屏幕状态</span><b id="rDisplayState">--</b></div>
+          <div class="setting-row"><span>板载音频</span><b id="rBoardAudioState">接口预留</b></div>
           <button class="btn" onclick="publishCmd('set_role_shorekeeper')">选择守岸人</button>
           <button class="btn" onclick="publishCmd('set_role_cartethyia')">选择卡提希娅</button>
           <button class="btn green" onclick="publishCmd('play_voice_001')">播放 001 启动语音</button>
           <button class="btn green" onclick="publishCmd('play_voice_101')">播放 101 灯光语音</button>
+          <button class="btn gray" onclick="publishCmd('screen_off')">强制关闭中控屏</button>
           <button class="btn gray" onclick="publishCmd('audio_reload')">重载语音包</button>
         </div>
       </div>
@@ -374,7 +377,7 @@ function applyData(d){
   if(rShoreState)rShoreState.innerText=d.VoicePackShorekeeper?('已检测 '+(d.VoiceCountShorekeeper||0)+' 条'):'未检测';
   if(rCartState)rCartState.innerText=d.VoicePackCartethyia?('已检测 '+(d.VoiceCountCartethyia||0)+' 条'):'未检测';
   if(rRoleState)rRoleState.innerText=d.CurrentRole==='cartethyia'?'卡提希娅':'守岸人';
-  if(rVoiceNow)rVoiceNow.innerText=(d.CurrentVoiceId?d.CurrentVoiceId+' ':'')+(d.CurrentVoiceFile||'--');
+  if(rVoiceNow)rVoiceNow.innerText=(d.CurrentVoiceId?d.CurrentVoiceId+' ':'')+(d.CurrentVoiceFile||'--');if(rDisplayState)rDisplayState.innerText=d.HeadlessDisplayOff?'已关闭':'可能亮屏';if(rBoardAudioState)rBoardAudioState.innerText=d.BoardAudioEnabled?'已启用':'接口预留';
 
   mTemp.innerText=Number(d.WenDu||0).toFixed(1)+'°C';
   mHum.innerText=Number(d.ShiDu||0).toFixed(0)+'%';
