@@ -53,7 +53,7 @@ button,input,select{font-family:inherit;color:inherit}button{cursor:pointer}
 <body>
 <div class="app">
   <aside class="side">
-    <div class="brand"><div class="logo"></div><div><h1>Ultra Remote</h1><p>V3.3.1 远程控制台</p></div></div>
+    <div class="brand"><div class="logo"></div><div><h1>Ultra Remote</h1><p>V3.4 远程控制台</p></div></div>
     <nav class="menu">
       <button class="active" onclick="showPage('home',this)">首页总览</button>
       <button onclick="showPage('monitor',this)">数据监测</button>
@@ -177,6 +177,19 @@ button,input,select{font-family:inherit;color:inherit}button{cursor:pointer}
           </div>
           <button class="btn" onclick="publishCmd('cloud_report')">请求中控上报</button>
           <button class="btn gray" onclick="clearLogs()">清空本地日志</button>
+        </div>
+        <div class="card card-pad">
+          <div class="section-title">SD 角色语音包</div>
+          <div class="setting-row"><span>SD 卡</span><b id="rSdState">--</b></div>
+          <div class="setting-row"><span>守岸人语音包</span><b id="rShoreState">--</b></div>
+          <div class="setting-row"><span>卡提希娅语音包</span><b id="rCartState">--</b></div>
+          <div class="setting-row"><span>当前角色</span><b id="rRoleState">--</b></div>
+          <div class="setting-row"><span>当前音频</span><b id="rVoiceNow">--</b></div>
+          <button class="btn" onclick="publishCmd('set_role_shorekeeper')">选择守岸人</button>
+          <button class="btn" onclick="publishCmd('set_role_cartethyia')">选择卡提希娅</button>
+          <button class="btn green" onclick="publishCmd('play_voice_001')">播放 001 启动语音</button>
+          <button class="btn green" onclick="publishCmd('play_voice_101')">播放 101 灯光语音</button>
+          <button class="btn gray" onclick="publishCmd('audio_reload')">重载语音包</button>
         </div>
       </div>
     </section>
@@ -357,6 +370,11 @@ function applyData(d){
   alarmSub.innerText=(d.RanQi?'燃气异常 ':'')+(d.YanWu?'烟雾异常 ':'')||'燃气 / 烟雾 / 安防';
   weatherBox.innerText=(d.WeatherText||'待更新')+' '+(d.OutdoorTemp!==undefined?Number(d.OutdoorTemp).toFixed(0)+'°C':'');
   weatherSub.innerText=(d.TomorrowForecast||'明日预报待更新');
+  if(rSdState)rSdState.innerText=d.SdOnline?'已挂载':'未挂载';
+  if(rShoreState)rShoreState.innerText=d.VoicePackShorekeeper?('已检测 '+(d.VoiceCountShorekeeper||0)+' 条'):'未检测';
+  if(rCartState)rCartState.innerText=d.VoicePackCartethyia?('已检测 '+(d.VoiceCountCartethyia||0)+' 条'):'未检测';
+  if(rRoleState)rRoleState.innerText=d.CurrentRole==='cartethyia'?'卡提希娅':'守岸人';
+  if(rVoiceNow)rVoiceNow.innerText=(d.CurrentVoiceId?d.CurrentVoiceId+' ':'')+(d.CurrentVoiceFile||'--');
 
   mTemp.innerText=Number(d.WenDu||0).toFixed(1)+'°C';
   mHum.innerText=Number(d.ShiDu||0).toFixed(0)+'%';
@@ -375,7 +393,7 @@ function applyData(d){
   refreshDeviceUI();applySceneHighlight();updateLinkState();
 }
 
-buildDevices();buildScenes();setRole(0);loadSettings();pushLog('sys','Ultra Fusion Remote WebUI V3.3.1 已启动');
+buildDevices();buildScenes();setRole(0);loadSettings();pushLog('sys','Ultra Fusion Remote WebUI V3.4 已启动');
 </script>
 </body>
 </html>
