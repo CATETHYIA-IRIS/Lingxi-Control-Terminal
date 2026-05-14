@@ -19,3 +19,4 @@ Ultra Fusion Remote WebUI V3.3.1 Pages 部署包
 - 主题保持 smarthomecmd / smarthomestatus / smarthomelog
 2026年5月11日22：09，更新Ultra Fusion Remote WebUI V3.4 
 2026年5月11日22：09，更新Ultra Fusion Remote WebUI V3.4.2
+2026年5月14日14:   28,   更新灵汐V0.5体验版
